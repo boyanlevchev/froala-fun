@@ -2,7 +2,7 @@ import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
 
-import Canvas from './components/canvas'
+import Canvas from './containers/canvas'
 
 function App() {
   return (
