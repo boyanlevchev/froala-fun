@@ -28,7 +28,7 @@ import 'froala-editor/css/plugins/video.min.css';
 import 'froala-editor/css/plugins/colors.min.css';
 import 'froala-editor/css/plugins/emoticons.min.css';
 
-import { setDraggableActions, addNewTextView, setStyles, setResizeableAction } from '../javascript/on_load';
+// import { froalaBanner } from '../javascript/on_load';
 
 // Require Font Awesome.
 // import 'font-awesome/css/font-awesome.css';
@@ -74,6 +74,9 @@ class Editor extends Component {
 
     const config = {
       events: {
+        'initialized': function () {
+          this.$wp[0].firstChild.style.display = "none"; // This is just temporary I promise!
+        },
         'click': (e) => {
           this.handleClick(e);
           this.props.setDragging(null);
