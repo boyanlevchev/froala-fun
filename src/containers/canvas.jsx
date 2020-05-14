@@ -145,6 +145,10 @@ class Canvas extends Component {
           <div id="canvas-placeholder">
             <h3 className={placeholderClass} >Double-click anywhere to begin...</h3>
           </div>
+          <div id="controls">
+            <p>Hold 'cmd' to drag items</p>
+            <p>Hold 'alt' to draw</p>
+          </div>
 
           <div className={sketchFieldClass} onKeyDown={this.handleKeyDown}>
             <SketchField  width='100%'

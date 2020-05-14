@@ -44,3 +44,13 @@
 .sketchFieldInactive {
   pointer-events: none;
 }
+
+#controls{
+  padding-left: 40px;
+  line-height: 60%;
+  text-align: left;
+  position: absolute;
+  bottom: 0;
+  left:0;
+  font-weight: 100;
+}

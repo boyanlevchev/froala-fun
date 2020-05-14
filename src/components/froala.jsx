@@ -69,12 +69,15 @@ class Editor extends Component {
       position: 'absolute',
       top: `${this.props.y}px`,
       left: `${this.props.x}px`,
-      minWidth: '150px'
+      minWidth: '170px'
     }
 
     const config = {
       events: {
         'initialized': function () {
+          setTimeout(froalaBanner(), 100);
+        },
+        'focus': function () {
           setTimeout(froalaBanner(), 100);
         },
         'click': (e) => {
@@ -95,26 +98,30 @@ class Editor extends Component {
           // this.props.setDragging(null);
         },
         'keyup': (e) => {
-          this.props.setCanvasDraggable(false);
+          setTimeout(froalaBanner(), 100);
+          if ( e.keyCode === 91 || e.keyCode === 93 ){
+            this.props.setCanvasDraggable(false);
+          }
           // this.props.setDragging(null);
         }
       },
       toolbarButtons: {
+        'moreRich': {
+            'buttons': ['insertImage', 'insertVideo','emoticons']
+          },
         'moreText': {
             'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
           },
         'moreParagraph': {
             'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
-          },
-        'moreRich': {
-            'buttons': ['insertImage', 'insertVideo','emoticons']
           }
+
       },
       autofocus: true,
       toolbarInline: true,
       toolbarVisibleWithoutSelection: true,
       heightMin: '30',
-      // width: '150',
+      placeholderText: 'Type something \n or click inside me',
       charCounterCount: true,
       attribution: false,
       imageTUIOptions: {
