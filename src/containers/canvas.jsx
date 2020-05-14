@@ -24,14 +24,14 @@ class Canvas extends Component {
   }
 
   handleKeyDown = (event) => {
-    console.log("keydown")
+    // console.log("keydown")
     if ( event.keyCode === 91 || event.keyCode === 93 ){
-      console.log("key 91")
+      // console.log("key 91")
       document.documentElement.style.cursor = "grab";
       this.props.setCanvasDraggable(true);
     }
     if ( event.keyCode === 18 ){
-      console.log("key 18")
+      // console.log("key 18")
       this.setState({
         drawable: true
       })
@@ -95,7 +95,7 @@ class Canvas extends Component {
   }
 
   handleMouseMove = (event) => {
-    console.log(this.props.draggableEditor)
+    // console.log(this.props.draggableEditor)
     if(this.props.draggableEditor !== null && this.props.canvasDraggable === true){
       let key = this.props.draggableEditor.key
       const x = (event.clientX - this.props.draggableEditor.xOffset)
@@ -155,7 +155,7 @@ class Canvas extends Component {
           </div>
 
           {Object.keys(this.state.editorComponents).map( editor => {
-            console.log(editor)
+            // console.log(editor)
             return <Editor id={editor}
                            x={this.state.editorComponents[editor].x}
                            y={this.state.editorComponents[editor].y}

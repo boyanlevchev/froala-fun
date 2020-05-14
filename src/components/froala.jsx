@@ -28,7 +28,7 @@ import 'froala-editor/css/plugins/video.min.css';
 import 'froala-editor/css/plugins/colors.min.css';
 import 'froala-editor/css/plugins/emoticons.min.css';
 
-// import { froalaBanner } from '../javascript/on_load';
+import { froalaBanner } from '../javascript/on_load';
 
 // Require Font Awesome.
 // import 'font-awesome/css/font-awesome.css';
@@ -62,8 +62,8 @@ class Editor extends Component {
     if (this.props.id === this.props.selectedEditor){
       editorClass = "editor selected-editor"
     }
-    console.log(`${this.props.selectedEditor} = ${this.props.id}`)
-    console.log(editorClass)
+    // console.log(`${this.props.selectedEditor} = ${this.props.id}`)
+    // console.log(editorClass)
 
     let style = {
       position: 'absolute',
@@ -75,7 +75,7 @@ class Editor extends Component {
     const config = {
       events: {
         'initialized': function () {
-          this.$wp[0].firstChild.style.display = "none"; // This is just temporary I promise!
+          setTimeout(froalaBanner(), 100);
         },
         'click': (e) => {
           this.handleClick(e);
