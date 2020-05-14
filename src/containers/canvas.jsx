@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { selectEditor, setDragging, setCanvasDraggable } from '../actions'
 
+import { froalaBanner } from '../javascript/on_load';
+
 import Editor from '../components/froala'
 import {SketchField, Tools} from 'react-sketch';
 
@@ -51,6 +53,7 @@ class Canvas extends Component {
   }
 
   handleClick = (event) => {
+    froalaBanner(); // temporary
     if (event.target.id === "canvas"){
       this.props.selectEditor(null)
     }

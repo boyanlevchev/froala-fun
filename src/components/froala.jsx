@@ -80,6 +80,12 @@ class Editor extends Component {
         'focus': function () {
           setTimeout(froalaBanner(), 100);
         },
+        'toolbar.show': function () {
+          setTimeout(froalaBanner(), 100);
+        },
+        'contentChanged': function () {
+          setTimeout(froalaBanner(), 100);
+        },
         'click': (e) => {
           this.handleClick(e);
           this.props.setDragging(null);
