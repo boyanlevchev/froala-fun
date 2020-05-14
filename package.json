@@ -15,6 +15,7 @@
     "react-froala-wysiwyg": "^3.1.1-1",
     "react-redux": "^7.2.0",
     "react-scripts": "3.4.1",
+    "react-sketch": "^0.5.1",
     "redux": "^4.0.5"
   },
   "scripts": {

@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { selectEditor, setDragging, setCanvasDraggable } from '../actions'
 
 import Editor from '../components/froala'
+import {SketchField, Tools} from 'react-sketch';
+
 
 class Canvas extends Component {
   constructor(props) {
@@ -15,7 +17,8 @@ class Canvas extends Component {
     this.state = {
       firstClick: 0,
       editorComponents: {},
-      editorIDs: []
+      editorIDs: [],
+      drawable: false
       // draggable: false
     };
   }
@@ -27,12 +30,23 @@ class Canvas extends Component {
       document.documentElement.style.cursor = "grab";
       this.props.setCanvasDraggable(true);
     }
+    if ( event.keyCode === 18 ){
+      console.log("key 18")
+      this.setState({
+        drawable: true
+      })
+    }
   }
 
   handleKeyUp = (event) => {
     if ( event.keyCode === 91 || event.keyCode === 93 ){
       document.documentElement.style.cursor = "default";
       this.props.setCanvasDraggable(false);
+    }
+    if ( event.keyCode === 18 ){
+      this.setState({
+        drawable: false
+      })
     }
   }
 
@@ -102,10 +116,16 @@ class Canvas extends Component {
   render(){
 
     let placeholderClass = ""
+    let sketchFieldClass = "sketchField sketchFieldInactive"
 
     if (this.state.editorIDs.length > 0){
-      placeholderClass = "canvas-placeholder-hidden "
+      placeholderClass = "canvas-placeholder-hidden"
     }
+    if (this.state.drawable === true){
+      sketchFieldClass = "sketchField"
+    }
+
+
 
     return(
       <div>
@@ -122,9 +142,18 @@ class Canvas extends Component {
           onMouseUp={this.handleMouseUp}
           tabIndex="0"
         >
-        <div id="canvas-placeholder">
-          <h3 className={placeholderClass} >Double click anywhere to begin...</h3>
-        </div>
+          <div id="canvas-placeholder">
+            <h3 className={placeholderClass} >Double-click anywhere to begin...</h3>
+          </div>
+
+          <div className={sketchFieldClass} onKeyDown={this.handleKeyDown}>
+            <SketchField  width='100%'
+                          height='100%'
+                          tool={Tools.Pencil}
+                          lineColor='black'
+                          lineWidth={3}/>
+          </div>
+
           {Object.keys(this.state.editorComponents).map( editor => {
             console.log(editor)
             return <Editor id={editor}
