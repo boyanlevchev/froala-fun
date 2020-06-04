@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
+
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { selectEditor, setDragging, setCanvasDraggable } from '../actions'
+import { selectEditor, setDragging, setCanvasDraggable, updateEditor, deleteEditor } from '../actions'
 
 import FroalaEditor from 'react-froala-wysiwyg';
+import Froalaeditor from 'froala-editor'
 
+// import the toolbar plugins
 import  'froala-editor/js/froala_editor.pkgd.min.js';
+
 import  'froala-editor/js/plugins/image.min.js';
 import  'froala-editor/js/plugins/video.min.js';
 import  'froala-editor/js/plugins/colors.min.js';
@@ -16,31 +20,40 @@ import  'froala-editor/js/plugins/font_size.min.js';
 import  'froala-editor/js/plugins/line_height.min.js';
 import  'froala-editor/js/plugins/lists.min.js';
 import  'froala-editor/js/plugins/align.min.js';
+import  'froala-editor/js/plugins/link.min.js';
+import  'froala-editor/js/plugins/file.min.js';
 
-
-
-
-// Require Editor CSS files.
+// import the files for the the toolbar plugins.
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
+
 import 'froala-editor/css/plugins/image.min.css';
 import 'froala-editor/css/plugins/video.min.css';
 import 'froala-editor/css/plugins/colors.min.css';
 import 'froala-editor/css/plugins/emoticons.min.css';
+import 'froala-editor/css/plugins/file.min.css';
 
-import { froalaBanner } from '../javascript/on_load';
+//Don't need this - will remove
+// import { froalaBanner } from '../javascript/on_load';
 
 // Require Font Awesome.
 // import 'font-awesome/css/font-awesome.css';
 
+
 class Editor extends Component {
+
   constructor(props) {
     super(props);
 
     this.state = {
       firstClick: 0,
       editorComponents: {},
-      editorIDs: []
+      editorIDs: [],
+      lastContentId: 0,
+      editorContents: {},
+      lastSubmittedEditorContents: {},
+      styling: "",
+      secondClick: {}
     };
   }
 
@@ -55,8 +68,14 @@ class Editor extends Component {
     this.props.setDragging({key: this.props.id, yOffset: yOffset, xOffset: xOffset})
   }
 
-  render() {
+  handleChange = (editor) => {
+    const htmlPath = `${this.props.canvasPath}/${this.props.id}/html`
+    this.props.updateEditor({[htmlPath]: editor.html.get()})
+  }
 
+
+  render() {
+    var self = this;
     let editorClass = "editor"
 
     if (this.props.id === this.props.selectedEditor){
@@ -72,19 +91,41 @@ class Editor extends Component {
       minWidth: '170px'
     }
 
+    Froalaeditor.DefineIcon('deleteItem', { NAME: 'deleteItem', SVG_KEY: 'remove' })
+    Froalaeditor.RegisterCommand('deleteItem', {
+      title: 'Delete this item',
+      focus: true,
+      undo: true,
+      refreshAfterCallback: true,
+      callback: function() {
+        const htmlPath = `${self.props.canvasPath}/${this.itemId}`
+        self.props.deleteEditor(htmlPath)
+      },
+    })
+
     const config = {
       events: {
-        'initialized': function () {
-          setTimeout(froalaBanner(), 100);
+        'initialized': function() {
+          this["itemId"] = self.props.id;
+          // self.state.initialHTML = this
+          // console.log(`initialized html: ${this['html']}`)
+          // setTimeout(froalaBanner(), 100);
+          // console.log('this is init this');
+          // console.log(this.html.get());
+
         },
-        'focus': function () {
-          setTimeout(froalaBanner(), 100);
-        },
-        'toolbar.show': function () {
-          setTimeout(froalaBanner(), 100);
-        },
+        // 'focus': function () {
+        //   // setTimeout(froalaBanner(), 100);
+        //   // console.log('this is focus this');
+        //   // console.log(this.html.get());
+        // },
+        // 'toolbar.show': function () {
+        //   // setTimeout(froalaBanner(), 100);
+        // },
         'contentChanged': function () {
-          setTimeout(froalaBanner(), 100);
+          // console.log(this._reactInternalFiber.firstEffect.stateNode.firstElementChild.firstElementChild.children)
+          console.log(`content changed html: ${this.html.get()}`)
+          self.handleChange(this);
         },
         'click': (e) => {
           this.handleClick(e);
@@ -93,36 +134,39 @@ class Editor extends Component {
         'mousedown': (e) => {
           this.handleMouseDown(e);
         },
-        'mouseup': (e) => {
-          // console.log("should be null now...")
-
-        },
         'keydown': (e) => {
           if ( e.keyCode === 91 || e.keyCode === 93 ){
             this.props.setCanvasDraggable(true);
           }
-          // this.props.setDragging(null);
         },
         'keyup': (e) => {
-          setTimeout(froalaBanner(), 100);
+          // setTimeout(froalaBanner(), 100);
           if ( e.keyCode === 91 || e.keyCode === 93 ){
             this.props.setCanvasDraggable(false);
           }
-          // this.props.setDragging(null);
         }
+        // ,
+        // 'video.uploadedToS3': function(link, key, response) {
+        //   console.log(`this is the video link: ${link}`)
+        // },
+        // 'image.uploadedToS3': function(link, key, response) {
+        //   console.log(`this is the image link: ${link}`)
+        // }
       },
       toolbarButtons: {
         'moreRich': {
-            'buttons': ['insertImage', 'insertVideo','emoticons']
+            'buttons': ['insertImage', 'insertVideo', 'insertLink', 'insertFile', 'emoticons'],
+            buttonsVisible: 5
           },
         'moreText': {
-            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
+            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting', 'alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote'],
+            buttonsVisible: 0
           },
-        'moreParagraph': {
-            'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
-          }
-
+        'custom': {
+          'buttons':['deleteItem']
+        }
       },
+      key: self.props.styling,
       autofocus: true,
       toolbarInline: true,
       toolbarVisibleWithoutSelection: true,
@@ -130,22 +174,8 @@ class Editor extends Component {
       placeholderText: 'Type something \n or click inside me',
       charCounterCount: true,
       attribution: false,
-      imageTUIOptions: {
-        includeUI: {
-            initMenu: "filter",
-            menuBarPosition: "left",
-            theme: {
-              "menu.activeIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-b.svg",
-              "menu.disabledIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-a.svg",
-              "menu.hoverIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-c.svg",
-              "menu.normalIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-d.svg",
-              "submenu.activeIcon.name": "icon-c",
-              "submenu.activeIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-c.svg",
-              "submenu.normalIcon.name": "icon-d",
-              "submenu.normalIcon.path": "https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/svg/icon-d.svg"
-            }
-        }
-      }
+      videoUploadToS3: self.props.secondClick,
+      imageUploadToS3: self.props.secondClick
     }
 
     return (
@@ -158,6 +188,8 @@ class Editor extends Component {
       >
         <FroalaEditor
           config={config}
+          model={this.props.html}
+          lastContentId={this.state.lastContentId}
         />
       </div>
     );
@@ -168,7 +200,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators( {
     selectEditor: selectEditor,
     setDragging: setDragging,
-    setCanvasDraggable: setCanvasDraggable
+    setCanvasDraggable: setCanvasDraggable,
+    updateEditor: updateEditor,
+    deleteEditor: deleteEditor
   },
     dispatch
   );
